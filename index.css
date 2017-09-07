@@ -26,5 +26,5 @@ header h1 {
 	padding: 0;
 }
 
-label {width: 200px; display: inline-block; }
+label {display: block; }
 input[type=text] {width: 500px;}
