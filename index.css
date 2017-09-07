@@ -2,7 +2,8 @@ html,
 body {
 	padding: 0;
 	margin: 0;
-	background-color: #a0c4dc;
+	background-color: #590000;
+	color: white;
 }
 
 body {
@@ -21,10 +22,13 @@ header {
 
 header h1 {
 	font-size: 40px;
-	font-weight: 100;
-	margin: 0 0 20px 0;
+	font-weight: 800;
+	margin: 0 20px 5px 0;
 	padding: 0;
 }
 
 label {display: block; }
 input[type=text] {width: 500px;}
+
+img {vertical-align: middle;    position: relative;
+	top: -3px;}
