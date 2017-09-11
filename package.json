@@ -33,6 +33,7 @@
     "electron-packager": "^8.0.0",
     "fs": "0.0.1-security",
     "json2csv": "^3.11.1",
+    "node-xls": "0.0.8",
     "path": "^0.12.7",
     "pdfreader": "^0.2.4",
     "xo": "^0.16.0"

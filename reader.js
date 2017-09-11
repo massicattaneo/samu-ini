@@ -2,8 +2,10 @@ const pdfreader = require('pdfreader');
 const fs = require('fs');
 const path = require('path');
 var json2csv = require('json2csv');
-var fields = ['file', 'id', 'contributes'];
-var fieldNames = ['NOME DEL FILE', 'NUMERO DI SERIE', 'CONTRIBUTI'];
+var NodeXls = require('node-xls');
+var order = ['file', 'id', 'contributes'];
+var fieldMap = {file: 'NOME DEL FILE', id:'NUMERO DI SERIE', contributes: 'CONTRIBUTI'};
+var tool = new NodeXls();
 
 function read(fileName, regEx, discounts) {
 	const files = [];
@@ -22,8 +24,8 @@ function read(fileName, regEx, discounts) {
 							contributes: contributes.filter((f, i) => contributes.indexOf(f) === i).join(',')
 						});
 						if (index === (dir.length - 1)) {
-							var result = json2csv({ data: files, fields: fields, del: ';', fieldNames });
-							fs.writeFileSync(path.resolve('./output/' + fileName), result);
+							var result = tool.json2xls(files, { order, fieldMap });
+							fs.writeFileSync(path.resolve('./output/' + fileName), result, 'binary');
 							console.log('READED: ', files.length, 'PDF FILES');
 							res(files);
 						}
