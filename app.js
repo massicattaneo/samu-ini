@@ -6,8 +6,8 @@ var fileNameId = 'fileName';
 
 // Listen for async-reply message from main process
 ipcRenderer.on('read-pdf-reply', (event, arg) => {
-	var value2 = document.getElementById(fileNameId).value;
-	alert('file "output/' + value2 + '.csv" creato con successo!');
+	var v = document.getElementById(fileNameId).value;
+	alert('file "output/' + v + '.csv" creato con successo!');
 });
 
 function init() {
