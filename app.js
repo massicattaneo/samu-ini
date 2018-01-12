@@ -25,5 +25,5 @@ function run() {
 		return i.trim();
 	});
 	var value2 = document.getElementById(fileNameId).value;
-	ipcRenderer.send('read-pdf', [value2 + '.csv', 'FOA-[^\s]*', value]);
+	ipcRenderer.send('read-pdf', [value2 + '.xlsx', value]);
 }

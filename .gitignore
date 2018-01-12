@@ -1,5 +1,6 @@
 node_modules
 /dist
 .idea/
-output/*.csv
-pdfs/*.pdf
+output/*.xlsx
+ordini/*.pdf
+fatture/*.pdf
