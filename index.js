@@ -22,7 +22,7 @@ function onClosed() {
 function createMainWindow() {
 	const win = new BrowserWindow({
 		width: 600,
-		height: 400,
+		height: 500,
 		icon: __dirname + '/icons/logo.ico'
 	});
 
@@ -52,16 +52,18 @@ app.on('ready', () => {
 ipcMain.on('read-pdf', async (event, arg) => {
 	const fileName = arg[0];
 	const discountCodes = arg[1];
+	const billFolder = arg[2];
+	const orderFolder = arg[3];
 
-	const orders = await orderReader();
-	const bills = await billReader(discountCodes);
+	const orders = await orderReader(orderFolder);
+	const bills = await billReader(discountCodes, billFolder);
 
 	const wb = XLSX.utils.book_new();
 	(function () {
 		/** FATTURE */
-		const headers = [Object.keys(bills[0])];
-		const array = [].concat(headers).concat(bills.map(file => {
-			return Object.keys(file).map(key => file[key])
+		const cols = ['foa', 'matricola', 'modello', 'lane', 'dataFattura', 'importoFattura', 'codiceFattura', 'supporto', 'nomeFile'];
+		const array = [].concat([cols]).concat(bills.map(file => {
+			return Object.keys(file).sort((a,b) => cols.indexOf(a) - cols.indexOf(b)).map(key => file[key])
 		}));
 		/* generate bills workbook */
 		const ws = XLSX.utils.aoa_to_sheet(array, {});
@@ -71,9 +73,9 @@ ipcMain.on('read-pdf', async (event, arg) => {
 
 	(function () {
 		/** ORDINI */
-		const headers = [Object.keys(orders[0])];
-		const array = [].concat(headers).concat(orders.map(file => {
-			return Object.keys(file).map(key => file[key])
+		const cols = ['foa', 'modello', 'lane', 'data', 'dealerNet', 'nomeFile'];
+		const array = [].concat([cols]).concat(orders.map(file => {
+			return Object.keys(file).sort((a,b) => cols.indexOf(a) - cols.indexOf(b)).map(key => file[key])
 		}));
 		/* generate orders workbook */
 		const ws = XLSX.utils.aoa_to_sheet(array);

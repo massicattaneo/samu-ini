@@ -2,10 +2,10 @@ const pdfreader = require('pdfreader');
 const path = require('path');
 const fs = require('fs');
 
-function read() {
+function read(folder = './ordini') {
 	const files = [];
 	return new Promise(res => {
-		const dir = fs.readdirSync('./ordini');
+		const dir = fs.readdirSync(folder);
 		dir.forEach(function (file, index) {
 			const rows = [];
 			const myResult = {
@@ -14,10 +14,13 @@ function read() {
 			};
 			if (path.extname(file).toLowerCase() === '.pdf') {
 				console.log('PROCESSING FILE: ', file);
-				new pdfreader.PdfReader().parseFileItems('./ordini/' + file, function (err, item) {
+				new pdfreader.PdfReader().parseFileItems(`${folder}/${file}`, function (err, item) {
 					if (!item) {
-						myResult.foa = myResult.foa.filter((f, i) => myResult.foa.indexOf(f) === i).join(',');
-						files.push(myResult);
+						myResult.foa.filter((f, i) => myResult.foa.indexOf(f) === i).forEach(function (foa, index, arr) {
+							const item = {};
+							Object.assign(item, myResult, { foa, dealerNet: Number(myResult.dealerNet.replace(',', '.')) /  arr.length});
+							files.push(item);
+						});
 						if (index === (dir.length - 1)) {
 							res(files);
 						}
@@ -30,7 +33,7 @@ function read() {
 							readLane(item, myResult);
 							readDate(item, myResult);
 							readDealerNet(item, myResult);
-						} catch(e) {
+						} catch (e) {
 							console.log(e)
 						}
 						rows.push(item.text);
@@ -66,7 +69,7 @@ function readLane(item, myResult) {
 function readDate(item, myResult) {
 	const re = new RegExp('Date\\s*:\\s*(.*)\\s*Factory');
 	if (item.text.match(re)) {
-		myResult.date = item.text.match(re)[1].trim();
+		myResult.data = item.text.match(re)[1].trim();
 	}
 }
 

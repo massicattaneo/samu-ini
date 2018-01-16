@@ -13,6 +13,8 @@
 				<h1><img src="icons/64x64.png" /> PDF READER</h1>
 				<form>
 					<label>NOME DEL FILE EXCEL:</label><input id="fileName" type="text"/><br/><br/>
+					<label>CARTELLA ORDINI: <em id="orderSaved"></em></label><input id="orderFolder" type="file" webkitdirectory/><br/><br/>
+					<label>CARTELLA FATTURE: <em id="billSaved"></em></label><input id="billFolder" type="file" webkitdirectory/><br/><br/>
 					<label>CODICI CONTRIBUTI: (separati da virgola)</label><input id="discounts" type="text"/><br/><br/>
 					<input type="button" onclick="save()" value="SALVA VALORI" />
 					<input type="button" onclick="run()" value="CREA FILE" /><br/><br/>
