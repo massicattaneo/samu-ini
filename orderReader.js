@@ -2,44 +2,48 @@ const pdfreader = require('pdfreader');
 const path = require('path');
 const fs = require('fs');
 
-function read(folder = './ordini') {
+function read(inputPath = './ordini') {
 	const files = [];
+	const folder = path.resolve(inputPath);
 	return new Promise(res => {
-		const dir = fs.readdirSync(folder);
+		const dir = fs.readdirSync(folder).filter(function (file) {
+			return path.extname(file).toLowerCase() === '.pdf';
+		});
 		dir.forEach(function (file, index) {
 			const rows = [];
 			const myResult = {
 				nomeFile: file,
 				foa: []
 			};
-			if (path.extname(file).toLowerCase() === '.pdf') {
-				console.log('PROCESSING FILE: ', file);
-				new pdfreader.PdfReader().parseFileItems(`${folder}/${file}`, function (err, item) {
-					if (!item) {
-						myResult.foa.filter((f, i) => myResult.foa.indexOf(f) === i).forEach(function (foa, index, arr) {
-							const item = {};
-							Object.assign(item, myResult, { foa, dealerNet: Number(myResult.dealerNet.replace(',', '.')) /  arr.length});
-							files.push(item);
+			console.log('PROCESSING FILE: ', file);
+			new pdfreader.PdfReader().parseFileItems(path.resolve(`${folder}/${file}`), function (err, item) {
+				if (!item) {
+					myResult.foa.filter((f, i) => myResult.foa.indexOf(f) === i).forEach(function (foa, index, arr) {
+						const item = {};
+						Object.assign(item, myResult, {
+							foa,
+							dealerNet: Number(myResult.dealerNet.replace(',', '.')) / arr.length
 						});
-						if (index === (dir.length - 1)) {
-							res(files);
-						}
+						files.push(item);
+					});
+					if (index === (dir.length - 1)) {
+						res(files);
 					}
-					else if (item.text) {
-						// accumulate text items into rows object, per line
-						try {
-							readFoa(item, myResult);
-							readModello(item, myResult);
-							readLane(item, myResult);
-							readDate(item, myResult);
-							readDealerNet(item, myResult);
-						} catch (e) {
-							console.log(e)
-						}
-						rows.push(item.text);
+				}
+				else if (item.text) {
+					// accumulate text items into rows object, per line
+					try {
+						readFoa(item, myResult);
+						readModello(item, myResult);
+						readLane(item, myResult);
+						readDate(item, myResult);
+						readDealerNet(item, myResult);
+					} catch (e) {
+						console.log(e)
 					}
-				});
-			}
+					rows.push(item.text);
+				}
+			});
 		});
 	});
 }

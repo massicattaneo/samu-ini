@@ -52,8 +52,8 @@ app.on('ready', () => {
 ipcMain.on('read-pdf', async (event, arg) => {
 	const fileName = arg[0];
 	const discountCodes = arg[1];
-	const billFolder = arg[2];
-	const orderFolder = arg[3];
+	const orderFolder = arg[2];
+	const billFolder = arg[3];
 
 	const orders = await orderReader(orderFolder);
 	const bills = await billReader(discountCodes, billFolder);

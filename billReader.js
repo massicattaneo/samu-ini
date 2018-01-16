@@ -2,41 +2,42 @@ const pdfreader = require('pdfreader');
 const path = require('path');
 const fs = require('fs');
 
-function read(discounts) {
+function read(discounts, inputPath = './fatture') {
 	const files = [];
 	return new Promise(res => {
-		const dir = fs.readdirSync('./fatture');
+		const folder = path.resolve(inputPath);
+		const dir = fs.readdirSync(folder).filter(function (file) {
+			return path.extname(file).toLowerCase() === '.pdf';
+		});
 		dir.forEach(function (file, index) {
 			const rows = [];
 			const myResult = {
 				supporto: [],
 				nomeFile: file
 			};
-			if (path.extname(file).toLowerCase() === '.pdf') {
-				console.log('PROCESSING FILE: ', file);
-				new pdfreader.PdfReader().parseFileItems('./fatture/' + file, function (err, item) {
-					if (!item) {
-						myResult.supporto = myResult.supporto.filter((f, i) => myResult.supporto.indexOf(f) === i).join(',');
-						files.push(myResult);
-						if (index === (dir.length - 1)) {
-							res(files);
-						}
+			console.log('PROCESSING FILE: ', file);
+			new pdfreader.PdfReader().parseFileItems(path.resolve(`${folder}/${file}`), function (err, item) {
+				if (!item) {
+					myResult.supporto = myResult.supporto.filter((f, i) => myResult.supporto.indexOf(f) === i).join(',');
+					files.push(myResult);
+					if (index === (dir.length - 1)) {
+						res(files);
 					}
-					else if (item.text) {
-						try {
-							readFoa(item, myResult);
-							readModelleAndMatricola(item, myResult, rows);
-							readFattura(item, myResult);
-							readLane(item, myResult);
-							readImportoFattura(item, myResult);
-							readDiscounts(item, myResult, discounts);
-						} catch(e) {
-							console.log(e)
-						}
-						rows.push(item.text);
+				}
+				else if (item.text) {
+					try {
+						readFoa(item, myResult);
+						readModelleAndMatricola(item, myResult, rows);
+						readFattura(item, myResult);
+						readLane(item, myResult);
+						readImportoFattura(item, myResult);
+						readDiscounts(item, myResult, discounts);
+					} catch (e) {
+						console.log(e)
 					}
-				});
-			}
+					rows.push(item.text);
+				}
+			});
 		});
 	});
 }
@@ -52,9 +53,9 @@ function readModelleAndMatricola(item, myResult, rows) {
 	const re = new RegExp('\\s.S/N\\s*(.*)');
 	if (item.text.match(re)) {
 		myResult.matricola = item.text.match(re)[1];
-		const prevLine = rows[rows.length-1];
+		const prevLine = rows[rows.length - 1];
 		const temp = prevLine.match(/\s*(\d.)\s*([^\s]*)\s*(.*)/)[3].trim().split(' ');
-		myResult.modello = temp.slice(0, temp.length-1).join(' ').trim();
+		myResult.modello = temp.slice(0, temp.length - 1).join(' ').trim();
 	}
 }
 
